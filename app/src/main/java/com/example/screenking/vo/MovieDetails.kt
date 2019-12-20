@@ -11,6 +11,7 @@ data class MovieDetails(
     val tagline: String?,
     val voteAverage: Double,
     val voteCount: Int,
+    val overview: String?,
     val runtime: Int
 ) {
     companion object {
@@ -25,6 +26,7 @@ data class MovieDetails(
                     tagline = tagline,
                     voteAverage = voteAverage,
                     voteCount = voteCount,
+                    overview = overview,
                     runtime = runtime
                 )
             }

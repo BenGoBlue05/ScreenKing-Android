@@ -52,6 +52,7 @@ class MovieDetailsFragment : DaggerFragment() {
         with(movie) {
             titleTV.text = title
             taglineTv.text = tagline
+            overviewTV.text = overview
             Glide.with(headerIV)
                 .load("https://image.tmdb.org/t/p/w500/$backdropPath")
                 .into(headerIV)

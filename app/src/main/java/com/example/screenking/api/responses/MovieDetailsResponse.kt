@@ -11,5 +11,6 @@ data class MovieDetailsResponse(
     val tagline: String?,
     @SerializedName("vote_average") val voteAverage: Double,
     @SerializedName("vote_count") val voteCount: Int,
+    val overview: String?,
     val runtime: Int
 )
