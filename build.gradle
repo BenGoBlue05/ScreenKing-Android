@@ -5,6 +5,7 @@ buildscript {
         appCompatVersion = '1.1.0'
         daggerVersion = '2.25.3'
         constraintLayoutVersion = '1.1.3'
+        glideVersion = '4.10.0'
         kotlin_version = '1.3.61'
         ktxVersion = '1.1.0'
         leakCanaryVersion = '2.0'

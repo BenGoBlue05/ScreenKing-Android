@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
 import com.example.screenking.R
 import com.example.screenking.vo.MovieDetails
 import dagger.android.support.DaggerFragment
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.movie_details_fragment.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -37,7 +39,7 @@ class MovieDetailsFragment : DaggerFragment() {
         viewModel.setMovieId(args.movieId)
         disposableContainer.add(
             viewModel.movieDetails
-                .subscribe(this::logSuccess, Timber::e)
+                .subscribe(this::updateUI, Timber::e)
         )
     }
 
@@ -46,7 +48,14 @@ class MovieDetailsFragment : DaggerFragment() {
         disposableContainer.clear()
     }
 
-    private fun logSuccess(movie: MovieDetails) {
-        Timber.d("Movie Details: $movie")
+    private fun updateUI(movie: MovieDetails) {
+        with(movie) {
+            titleTV.text = title
+            taglineTv.text = tagline
+            Glide.with(headerIV)
+                .load("https://image.tmdb.org/t/p/w500/$backdropPath")
+                .into(headerIV)
+        }
+
     }
 }
