@@ -7,6 +7,7 @@ buildscript {
         constraintLayoutVersion = '1.1.3'
         kotlin_version = '1.3.61'
         ktxVersion = '1.1.0'
+        leakCanaryVersion = '2.0'
         lifecycleVersion = '2.1.0'
         materialVersion = '1.0.0'
         navVersion = '2.1.0'
@@ -14,12 +15,13 @@ buildscript {
         rxAndroidVersion = '2.1.1'
         rxJavaVersion = '2.2.16'
         rxKotlinVersion = '2.4.0'
+        timberVersion = '4.7.1'
 
     }
     repositories {
         google()
         jcenter()
-        
+
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.3'
@@ -33,7 +35,7 @@ allprojects {
     repositories {
         google()
         jcenter()
-        
+
     }
 }
 
