@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.screenking.R
 import dagger.android.support.DaggerFragment
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.home_fragment.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -21,7 +21,7 @@ class HomeFragment : DaggerFragment() {
 
     private val viewModel: HomeViewModel by viewModels { viewModelFactory }
 
-    private val disposables: MutableList<Disposable> = mutableListOf()
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,15 +43,16 @@ class HomeFragment : DaggerFragment() {
             )
         }
 
-        disposables += viewModel.movies.subscribe(adapter::submitList, Timber::e)
-        disposables += viewModel.viewMovieDetails.subscribe {
-            Timber.d("Movie Summary: $it")
-        }
+        compositeDisposable.addAll(
+            viewModel.movies.subscribe(adapter::submitList, Timber::e),
+            viewModel.viewMovieDetails.subscribe {
+                Timber.d("Movie Summary: $it")
+            }
+        )
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        disposables.forEach(Disposable::dispose)
-        disposables.clear()
+        compositeDisposable.clear()
     }
 }
