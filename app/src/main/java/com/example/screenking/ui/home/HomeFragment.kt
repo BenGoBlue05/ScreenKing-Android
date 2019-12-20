@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.screenking.R
+import com.example.screenking.vo.MovieSummary
 import dagger.android.support.DaggerFragment
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.home_fragment.*
@@ -45,14 +47,17 @@ class HomeFragment : DaggerFragment() {
 
         compositeDisposable.addAll(
             viewModel.movies.subscribe(adapter::submitList, Timber::e),
-            viewModel.viewMovieDetails.subscribe {
-                Timber.d("Movie Summary: $it")
-            }
+            viewModel.viewMovieDetails.subscribe(this::viewMovieDetails, Timber::e)
         )
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         compositeDisposable.clear()
+    }
+
+    private fun viewMovieDetails(movie: MovieSummary) {
+        val action = HomeFragmentDirections.actionNavigationHomeToNavigationMovieDetails(movie.id)
+        findNavController().navigate(action)
     }
 }

@@ -3,6 +3,7 @@ package com.example.screenking.di
 import com.example.screenking.MainActivity
 import com.example.screenking.ui.dashboard.DashboardModule
 import com.example.screenking.ui.home.HomeModule
+import com.example.screenking.ui.moviedetails.MovieDetailsModule
 import com.example.screenking.ui.notifications.NotificationsModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -24,7 +25,8 @@ abstract class ActivityBindingModule {
         modules = [
             DashboardModule::class,
             HomeModule::class,
-            NotificationsModule::class
+            NotificationsModule::class,
+            MovieDetailsModule::class
         ]
     )
     internal abstract fun mainActivity(): MainActivity
