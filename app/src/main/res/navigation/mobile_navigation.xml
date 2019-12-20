@@ -30,6 +30,7 @@
     <fragment
         android:id="@+id/navigation_movie_details"
         android:name="com.example.screenking.ui.moviedetails.MovieDetailsFragment"
+        android:label="Details"
         tools:layout="@layout/movie_details_fragment">
 
         <argument
