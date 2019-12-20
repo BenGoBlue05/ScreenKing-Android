@@ -3,6 +3,7 @@ package com.example.screenking.vo
 import com.example.screenking.api.responses.MoviesResponse
 
 data class MovieSummary(
+    val id: Int,
     val title: String,
     val releaseDate: String,
     val overview: String,
@@ -14,6 +15,7 @@ data class MovieSummary(
         fun create(responseModel: MoviesResponse.Model) =
             responseModel.run {
                 MovieSummary(
+                    id = id,
                     title = title,
                     releaseDate = releaseDate,
                     overview = overview,

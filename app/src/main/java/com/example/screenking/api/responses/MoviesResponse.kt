@@ -9,6 +9,7 @@ data class MoviesResponse(
     val results: List<Model>
 ) {
     data class Model(
+        val id: Int,
         val title: String,
         @SerializedName("release_date") val releaseDate: String,
         val overview: String,
