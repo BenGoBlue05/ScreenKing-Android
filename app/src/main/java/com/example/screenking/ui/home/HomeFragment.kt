@@ -21,7 +21,7 @@ class HomeFragment : DaggerFragment() {
 
     private val viewModel: HomeViewModel by viewModels { viewModelFactory }
 
-    private lateinit var disposable: Disposable
+    private val disposables: MutableList<Disposable> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,11 +42,16 @@ class HomeFragment : DaggerFragment() {
                 )
             )
         }
-        disposable = viewModel.movies.subscribe(adapter::submitList, Timber::e)
+
+        disposables += viewModel.movies.subscribe(adapter::submitList, Timber::e)
+        disposables += viewModel.viewMovieDetails.subscribe {
+            Timber.d("Movie Summary: $it")
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        disposable.dispose()
+        disposables.forEach(Disposable::dispose)
+        disposables.clear()
     }
 }
