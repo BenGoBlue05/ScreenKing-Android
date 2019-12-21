@@ -4,4 +4,5 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="a11y_backdrop_image">Backdrop image</string>
+    <string name="a11y_poster">poster</string>
 </resources>

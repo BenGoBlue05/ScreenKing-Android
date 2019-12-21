@@ -16,20 +16,34 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:onClick="@{() -> listener.onMovieSelected(movie)}">
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:onClick="@{() -> listener.onMovieSelected(movie)}"
-            android:padding="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:text="@{movie.title}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/posterIV"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Joker" />
+
+        <ImageView
+            android:id="@+id/posterIV"
+            android:layout_width="40dp"
+            android:layout_height="56dp"
+            android:contentDescription="@string/a11y_poster"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:posterPath="@{movie.posterPath}"
+            tools:srcCompat="@tools:sample/avatars" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
