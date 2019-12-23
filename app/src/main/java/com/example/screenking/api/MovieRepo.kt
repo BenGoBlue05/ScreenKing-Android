@@ -3,13 +3,14 @@ package com.example.screenking.api
 import com.example.screenking.vo.MovieDetails
 import com.example.screenking.vo.MovieSummary
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import javax.inject.Inject
 import javax.inject.Singleton
 
 interface MovieRepo {
     fun loadMovies(): Flowable<List<MovieSummary>>
 
-    fun loadMovieDetails(movieId: Int): Flowable<MovieDetails>
+    fun loadMovieDetails(movieId: Int): Observable<MovieDetails>
 }
 
 @Singleton
@@ -23,9 +24,10 @@ class DefaultMovieRepo @Inject constructor(
             .toFlowable()
     }
 
-    override fun loadMovieDetails(movieId: Int): Flowable<MovieDetails> {
+    override fun loadMovieDetails(movieId: Int): Observable<MovieDetails> {
         return tmdbService.getMovieDetails(movieId)
             .map(MovieDetails.Companion::create)
-            .toFlowable()
+            .toObservable()
+
     }
 }

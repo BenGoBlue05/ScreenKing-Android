@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
@@ -37,9 +38,9 @@ class MovieDetailsFragment : DaggerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.setMovieId(args.movieId)
-        disposableContainer.add(
-            viewModel.movieDetails
-                .subscribe(this::updateUI, Timber::e)
+        disposableContainer.addAll(
+            viewModel.movieDetails.subscribe(this::updateUI, Timber::e),
+            viewModel.showLoadingIndicator.subscribe { loadingIndicator.isVisible = it }
         )
     }
 
