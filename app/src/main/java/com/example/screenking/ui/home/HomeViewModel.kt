@@ -5,6 +5,7 @@ import com.example.screenking.domain.MoviesUseCase
 import com.example.screenking.vo.MovieSummary
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
@@ -14,8 +15,16 @@ class HomeViewModel @Inject constructor(
 
     val viewMovieDetails: PublishSubject<MovieSummary> = PublishSubject.create()
 
-    val movies: Flowable<List<MovieSummary>> =
-        moviesUseCase().observeOn(AndroidSchedulers.mainThread())
+    val showLoadingIndicator: BehaviorSubject<Boolean> = BehaviorSubject.create()
+
+    val movies: Flowable<List<MovieSummary>> = moviesUseCase()
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnNext { showLoadingIndicator.onNext(false) }
+        .doOnError { showLoadingIndicator.onNext(false) }
+
+    init {
+        showLoadingIndicator.onNext(true)
+    }
 
     override fun onMovieSelected(movie: MovieSummary) {
         viewMovieDetails.onNext(movie)
