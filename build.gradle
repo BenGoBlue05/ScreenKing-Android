@@ -13,6 +13,7 @@ buildscript {
         materialVersion = '1.0.0'
         navVersion = '2.1.0'
         retrofitVersion = '2.7.0'
+        roomVersion = '2.2.3'
         rxAndroidVersion = '2.1.1'
         rxJavaVersion = '2.2.16'
         rxKotlinVersion = '2.4.0'

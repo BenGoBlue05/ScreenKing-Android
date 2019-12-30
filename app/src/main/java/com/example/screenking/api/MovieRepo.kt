@@ -1,5 +1,6 @@
 package com.example.screenking.api
 
+import com.example.screenking.db.MovieDao
 import com.example.screenking.vo.MovieDetails
 import com.example.screenking.vo.MovieSummary
 import io.reactivex.Flowable
@@ -15,7 +16,8 @@ interface MovieRepo {
 
 @Singleton
 class DefaultMovieRepo @Inject constructor(
-    private val tmdbService: TMDBService
+    private val tmdbService: TMDBService,
+    private val movieDao: MovieDao
 ) : MovieRepo {
 
     override fun loadMovies(): Flowable<List<MovieSummary>> {
@@ -26,8 +28,7 @@ class DefaultMovieRepo @Inject constructor(
 
     override fun loadMovieDetails(movieId: Int): Observable<MovieDetails> {
         return tmdbService.getMovieDetails(movieId)
-            .map(MovieDetails.Companion::create)
-            .toObservable()
-
+            .flatMapCompletable { movieDao.insertMovieDetails(MovieDetails.create(it)) }
+            .andThen(movieDao.loadMovieDetails(movieId))
     }
 }

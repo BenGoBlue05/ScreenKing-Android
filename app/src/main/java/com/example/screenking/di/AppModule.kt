@@ -1,10 +1,13 @@
 package com.example.screenking.di
 
 import android.content.Context
+import androidx.room.Room
 import com.example.screenking.SKApplication
 import com.example.screenking.api.DefaultMovieRepo
 import com.example.screenking.api.MovieRepo
 import com.example.screenking.api.TMDBService
+import com.example.screenking.db.MovieDao
+import com.example.screenking.db.SKDatabase
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -28,6 +31,18 @@ internal class AppModule {
 
     @Provides
     @Singleton
+    fun providesDb(context: Context): SKDatabase {
+        return Room.databaseBuilder(context, SKDatabase::class.java, "sk.db")
+            .fallbackToDestructiveMigration()
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun providesMovieDao(db: SKDatabase) = db.movieDao()
+
+    @Provides
+    @Singleton
     fun providesTmdbService(): TMDBService {
         return Retrofit.Builder()
             .baseUrl(BASE_URL_TMDB)
@@ -39,8 +54,8 @@ internal class AppModule {
 
     @Provides
     @Singleton
-    fun providesMovieRepo(tmdbService: TMDBService): MovieRepo {
-        return DefaultMovieRepo(tmdbService)
+    fun providesMovieRepo(tmdbService: TMDBService, movieDao: MovieDao): MovieRepo {
+        return DefaultMovieRepo(tmdbService, movieDao)
     }
 
 

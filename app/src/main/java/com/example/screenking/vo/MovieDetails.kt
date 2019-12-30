@@ -1,9 +1,12 @@
 package com.example.screenking.vo
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.example.screenking.api.responses.MovieDetailsResponse
 
+@Entity
 data class MovieDetails(
-    val id: Int,
+    @PrimaryKey val id: Int,
     val title: String,
     val releaseDate: String,
     val posterPath: String?,
