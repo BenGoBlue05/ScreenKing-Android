@@ -6,8 +6,8 @@ import com.example.screenking.vo.MovieSummary
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,27 +32,23 @@ class DefaultMovieRepo @Inject constructor(
 
     override fun loadMovieDetails(movieId: Int): Observable<MovieDetails> {
         val compositeDisposable = CompositeDisposable()
-        val result = movieDao.loadMovieDetails(movieId)
+        val res: BehaviorSubject<MovieDetails> = BehaviorSubject.create()
+        movieDao.loadMovieDetails(movieId)
             .subscribeOn(Schedulers.io())
-            .doOnComplete { compositeDisposable.dispose() }
+            .doOnTerminate { compositeDisposable.dispose() }
+            .subscribe(res)
 
         if (movieDetailsRateLimiter.shouldFetch(movieId)) {
-            compositeDisposable.add(fetchAndSaveMovieDetails(movieId))
-        } else {
             compositeDisposable.add(
-                movieDao.loadMovieDetailsAsSingle(movieId)
-                    .subscribeOn(Schedulers.io())
-                    .doOnError { compositeDisposable.add(fetchAndSaveMovieDetails(movieId)) }
+                tmdbService.getMovieDetails(movieId)
+                    .doOnError {
+                        movieDetailsRateLimiter.reset(movieId)
+                        res.onError(it)
+                    }
+                    .flatMapCompletable { movieDao.insertMovieDetails(MovieDetails.create(it)) }
                     .subscribe()
             )
         }
-        return result
-    }
-
-    private fun fetchAndSaveMovieDetails(movieId: Int): Disposable {
-        return tmdbService.getMovieDetails(movieId)
-            .flatMapCompletable { movieDao.insertMovieDetails(MovieDetails.create(it)) }
-            .doOnError { movieDetailsRateLimiter.reset(movieId) }
-            .subscribe()
+        return res
     }
 }
