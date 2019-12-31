@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.screenking.SKApplication
 import com.example.screenking.api.DefaultMovieRepo
+import com.example.screenking.api.DefaultRateLimiter
 import com.example.screenking.api.MovieRepo
 import com.example.screenking.api.TMDBService
 import com.example.screenking.db.MovieDao
@@ -14,6 +15,7 @@ import dagger.Provides
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -55,7 +57,7 @@ internal class AppModule {
     @Provides
     @Singleton
     fun providesMovieRepo(tmdbService: TMDBService, movieDao: MovieDao): MovieRepo {
-        return DefaultMovieRepo(tmdbService, movieDao)
+        return DefaultMovieRepo(tmdbService, movieDao, DefaultRateLimiter(1, TimeUnit.MINUTES))
     }
 
 

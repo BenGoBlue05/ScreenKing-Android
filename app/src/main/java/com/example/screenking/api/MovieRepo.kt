@@ -5,6 +5,9 @@ import com.example.screenking.vo.MovieDetails
 import com.example.screenking.vo.MovieSummary
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,7 +20,8 @@ interface MovieRepo {
 @Singleton
 class DefaultMovieRepo @Inject constructor(
     private val tmdbService: TMDBService,
-    private val movieDao: MovieDao
+    private val movieDao: MovieDao,
+    private val movieDetailsRateLimiter: RateLimiter<Int>
 ) : MovieRepo {
 
     override fun loadMovies(): Flowable<List<MovieSummary>> {
@@ -27,8 +31,28 @@ class DefaultMovieRepo @Inject constructor(
     }
 
     override fun loadMovieDetails(movieId: Int): Observable<MovieDetails> {
+        val compositeDisposable = CompositeDisposable()
+        val result = movieDao.loadMovieDetails(movieId)
+            .subscribeOn(Schedulers.io())
+            .doOnComplete { compositeDisposable.dispose() }
+
+        if (movieDetailsRateLimiter.shouldFetch(movieId)) {
+            compositeDisposable.add(fetchAndSaveMovieDetails(movieId))
+        } else {
+            compositeDisposable.add(
+                movieDao.loadMovieDetailsAsSingle(movieId)
+                    .subscribeOn(Schedulers.io())
+                    .doOnError { compositeDisposable.add(fetchAndSaveMovieDetails(movieId)) }
+                    .subscribe()
+            )
+        }
+        return result
+    }
+
+    private fun fetchAndSaveMovieDetails(movieId: Int): Disposable {
         return tmdbService.getMovieDetails(movieId)
             .flatMapCompletable { movieDao.insertMovieDetails(MovieDetails.create(it)) }
-            .andThen(movieDao.loadMovieDetails(movieId))
+            .doOnError { movieDetailsRateLimiter.reset(movieId) }
+            .subscribe()
     }
 }
