@@ -6,6 +6,7 @@ import com.example.screenking.vo.MovieSummary
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
@@ -41,12 +42,15 @@ class DefaultMovieRepo @Inject constructor(
         if (movieDetailsRateLimiter.shouldFetch(movieId)) {
             compositeDisposable.add(
                 tmdbService.getMovieDetails(movieId)
-                    .doOnError {
-                        movieDetailsRateLimiter.reset(movieId)
-                        res.onError(it)
-                    }
                     .flatMapCompletable { movieDao.insertMovieDetails(MovieDetails.create(it)) }
-                    .subscribe()
+                    .subscribeBy(
+                        onError = {
+                            movieDetailsRateLimiter.reset(movieId)
+                            if (!res.hasValue()) {
+                                res.onError(it)
+                            }
+                        }
+                    )
             )
         }
         return res

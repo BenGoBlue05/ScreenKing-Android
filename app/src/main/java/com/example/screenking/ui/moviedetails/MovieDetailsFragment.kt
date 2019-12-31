@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
-import com.example.screenking.R
+import com.example.screenking.databinding.MovieDetailsFragmentBinding
 import com.example.screenking.vo.MovieDetails
 import dagger.android.support.DaggerFragment
 import io.reactivex.disposables.CompositeDisposable
@@ -33,20 +33,27 @@ class MovieDetailsFragment : DaggerFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.movie_details_fragment, container, false)
+        return MovieDetailsFragmentBinding.inflate(inflater, container, false)
+            .apply {
+                lifecycleOwner = this@MovieDetailsFragment
+                viewModel = this@MovieDetailsFragment.viewModel
+            }
+            .root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.setMovieId(args.movieId)
         disposableContainer.addAll(
+            viewModel.showLoadingIndicator.subscribe { loadingIndicator.isVisible = it },
             viewModel.movieDetails.subscribe(this::updateUI, Timber::e),
-            viewModel.showLoadingIndicator.subscribe { loadingIndicator.isVisible = it }
+            viewModel.retry.subscribe { viewModel.setMovieId(args.movieId) },
+            viewModel.displayRetryButton.subscribe { retryButton.isVisible = it }
         )
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        disposableContainer.clear()
+        disposableContainer.dispose()
     }
 
     private fun updateUI(movie: MovieDetails) {

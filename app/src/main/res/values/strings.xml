@@ -5,4 +5,5 @@
     <string name="title_notifications">Notifications</string>
     <string name="a11y_backdrop_image">Backdrop image</string>
     <string name="a11y_poster">poster</string>
+    <string name="retry">Retry</string>
 </resources>
